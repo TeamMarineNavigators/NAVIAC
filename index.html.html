@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sea Route & Distance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      width: 90%;
+      margin: 20px auto;
+    }
+    #map {
+      height: 500px;
+      width: 100%;
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    .controls input, .controls button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    #info {
+      margin: 10px 0;
+    }
+  </style>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet" />
+</head>
+<body>
+
+<div class="container">
+  <h2>Sea Route & Distance</h2>
+
+  <div class="controls">
+    <!-- Start and destination inputs with datalist -->
+    <input type="text" id="start-port" list="countries" placeholder="Find start port">
+    <input type="text" id="destination-port" list="countries" placeholder="Find destination port">
+    <button onclick="calculateRoute()">Calculate</button>
+    
+    <!-- Datalist with countries and coordinates -->
+    <datalist id="countries">
+      <option value="India" data-coords="[20.5937, 78.9629]"></option>
+      <option value="USA" data-coords="[37.0902, -95.7129]"></option>
+      <option value="Brazil" data-coords="[-14.2350, -51.9253]"></option>
+      <option value="Australia" data-coords="[-25.2744, 133.7751]"></option>
+      <option value="South Africa" data-coords="[-30.5595, 22.9375]"></option>
+      <option value="China" data-coords="[35.8617, 104.1954]"></option>
+      <option value="Canada" data-coords="[56.1304, -106.3468]"></option>
+      <option value="Russia" data-coords="[61.5240, 105.3188]"></option>
+      <option value="Germany" data-coords="[51.1657, 10.4515]"></option>
+      <option value="France" data-coords="[46.6034, 1.8883]"></option>
+      <option value="United Kingdom" data-coords="[55.3781, -3.4360]"></option>
+      <option value="Japan" data-coords="[36.2048, 138.2529]"></option>
+      <option value="Mexico" data-coords="[23.6345, -102.5528]"></option>
+      <option value="Italy" data-coords="[41.8719, 12.5674]"></option>
+      <option value="Argentina" data-coords="[-38.4161, -63.6167]"></option>
+      <option value="Nigeria" data-coords="[9.0820, 8.6753]"></option>
+      <option value="Egypt" data-coords="[26.8206, 30.8025]"></option>
+      <option value="Turkey" data-coords="[38.9637, 35.2433]"></option>
+      <option value="Spain" data-coords="[40.4637, -3.7492]"></option>
+      <option value="South Korea" data-coords="[35.9078, 127.7669]"></option>
+      <option value="Saudi Arabia" data-coords="[23.8859, 45.0792]"></option>
+      <option value="Indonesia" data-coords="[-0.7893, 113.9213]"></option>
+      <option value="Pakistan" data-coords="[30.3753, 69.3451]"></option>
+      <option value="Bangladesh" data-coords="[23.6850, 90.3563]"></option>
+      <option value="Ukraine" data-coords="[48.3794, 31.1656]"></option>
+      <option value="Thailand" data-coords="[15.8700, 100.9925]"></option>
+      <option value="Vietnam" data-coords="[14.0583, 108.2772]"></option>
+      <option value="Philippines" data-coords="[12.8797, 121.7740]"></option>
+      <option value="Malaysia" data-coords="[4.2105, 101.9758]"></option>
+      <option value="New Zealand" data-coords="[-40.9006, 174.8860]"></option>
+      <option value="Chile" data-coords="[-35.6751, -71.5430]"></option>
+      <option value="Colombia" data-coords="[4.5709, -74.2973]"></option>
+      <option value="Peru" data-coords="[-9.1900, -75.0152]"></option>
+      <option value="Iran" data-coords="[32.4279, 53.6880]"></option>
+      <option value="Iraq" data-coords="[33.2232, 43.6793]"></option>
+      <option value="Afghanistan" data-coords="[33.9391, 67.7100]"></option>
+      <option value="Sri Lanka" data-coords="[7.8731, 80.7718]"></option>
+      <option value="Nepal" data-coords="[28.3949, 84.1240]"></option>
+      <option value="Myanmar" data-coords="[21.9162, 95.9560]"></option>
+      <option value="Singapore" data-coords="[1.3521, 103.8198]"></option>
+      <option value="Israel" data-coords="[31.0461, 34.8516]"></option>
+      <option value="Sweden" data-coords="[60.1282, 18.6435]"></option>
+      <option value="Norway" data-coords="[60.4720, 8.4689]"></option>
+      <option value="Finland" data-coords="[61.9241, 25.7482]"></option>
+      <option value="Poland" data-coords="[51.9194, 19.1451]"></option>
+      <option value="Netherlands" data-coords="[52.1326, 5.2913]"></option>
+      <option value="Belgium" data-coords="[50.8503, 4.3517]"></option>
+      <option value="Switzerland" data-coords="[46.8182, 8.2275]"></option>
+      <option value="Austria" data-coords="[47.5162, 14.5501]"></option>
+      <option value="Czech Republic" data-coords="[49.8175, 15.4730]"></option>
+      <option value="Portugal" data-coords="[39.3999, -8.2245]"></option>
+      <option value="Greece" data-coords="[39.0742, 21.8243]"></option>
+      <option value="Denmark" data-coords="[56.2639, 9.5018]"></option>
+      <option value="Ireland" data-coords="[53.4129, -8.2439]"></option>
+      <option value="Cuba" data-coords="[21.5218, -77.7812]"></option>
+      <option value="Venezuela" data-coords="[6.4238, -66.5897]"></option>
+    </datalist>
+  </div>
+
+  <div id="info">
+    <p>Distance: <span id="distance">0</span> nautical miles</p>
+    <p>Time at Sea: <span id="time-at-sea">0</span> days</p>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<script>
+  // Initialize the map
+  const map = L.map('map').setView([20, 0], 2);  // Set initial map view
+  
+  // Use MapTiler tiles
+  L.tileLayer('https://api.maptiler.com/maps/topo-v2/{z}/{x}/{y}.png?key=GmMCVoS21IJDUV20zUvT', {
+    attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a>',
+    tileSize: 512,
+    zoomOffset: -1,
+    minZoom: 1,
+    maxZoom: 18
+  }).addTo(map);
+  
+  let startMarker, destinationMarker, routeLine, shipIcon, movingMarker;
+
+  // Ship icon
+  shipIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2499/2499536.png',
+    iconSize: [32, 32],  // Size of the icon
+    iconAnchor: [16, 16],  // Point of the icon which will correspond to marker's location
+  });
+
+  // Function to calculate route
+  function calculateRoute() {
+    const startPort = document.getElementById('start-port').value;
+    const destinationPort = document.getElementById('destination-port').value;
+
+    if (startPort && destinationPort) {
+      // Dummy coordinates for demonstration purposes
+      const startCoords = [20.0, 72.8];  // Sample start coordinates (replace with real data)
+      const destinationCoords = [49.3, -123.1];  // Sample destination coordinates (replace with real data)
+
+      // Clear existing markers and route line
+      if (startMarker) map.removeLayer(startMarker);
+      if (destinationMarker) map.removeLayer(destinationMarker);
+      if (routeLine) map.removeLayer(routeLine);
+      if (movingMarker) map.removeLayer(movingMarker);
+
+      // Add markers for start and destination ports
+      startMarker = L.marker(startCoords).addTo(map).bindPopup(startPort).openPopup();
+      destinationMarker = L.marker(destinationCoords).addTo(map).bindPopup(destinationPort).openPopup();
+
+      // Draw dotted yellow route line
+      routeLine = L.polyline([startCoords, destinationCoords], { color: 'blue', dashArray: '5, 10' }).addTo(map);
+
+      // Move ship icon along the route
+      movingMarker = L.Marker.movingMarker([startCoords, destinationCoords], [10000], {
+        icon: shipIcon,
+        autostart: true
+      }).addTo(map);
+
+      // Calculate and display the distance and time (dummy calculations)
+      const distance = 15719;  // Replace with real calculated distance
+      const speed = 10;  // Example speed in knots
+      const timeAtSea = (distance / speed).toFixed(1);
+
+      document.getElementById('distance').innerText = distance;
+      document.getElementById('time-at-sea').innerText = timeAtSea;
+
+      // Adjust map to fit the route
+      map.fitBounds(routeLine.getBounds());
+    } else {
+      alert('Please enter both start and destination ports.');
+    }
+  }
+</script>
+
+<!-- Include Leaflet Moving Marker plugin -->
+<script src="https://unpkg.com/leaflet-moving-marker/MovingMarker.js"></script>
+
+</body>
+</html>
